@@ -1,0 +1,6 @@
+language = "C++"
+include_guard = "ble_bridge_h"
+
+[parse]
+parse_deps = true
+include = ["switchbot"]
