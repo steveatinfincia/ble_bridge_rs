@@ -72,6 +72,14 @@ pub struct SensorData {
     pub device_data: DeviceData,
 }
 
+/*
+ * This function should be called from a background thread if a UI
+ * framework is being used, otherwise you can call it directly from
+ * main() in c or c++.
+ * 
+ * Be sure to provide a C function pointer a void* userdata pointer,
+ * if needed.
+ */
 #[no_mangle]
 pub extern "C" fn ble_bridge_run(state: &BLEState) -> i32 {
     tokio::runtime::Builder::new_multi_thread()

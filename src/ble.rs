@@ -1,3 +1,16 @@
+/*
+ * This module is a demonstration of using bluez-async to receive
+ * Bluetooth LE advertisements, and using the switchbot_rs crate to
+ * decode them.
+ * 
+ * Ideally you would want to actively connect to newly discovered devices,
+ * discover the SwitchBot primary service UUID (if the device provides it),
+ * and only then attempt to parse the data the device advertises.
+ * 
+ * However this crate does not currently do that, it parses the data directly
+ * and attempts to avoid false positives, which works out well in practice
+ * for informal testing.
+ */
 use bluez_async::{BluetoothSession, DiscoveryFilter};
 
 #[allow(unused_imports)]
@@ -17,6 +30,11 @@ use crate::CSwitchBotMeterData;
 use crate::CSwitchBotPlugData;
 use crate::CSwitchBotHumidifierData;
 
+/*
+ * If you find yourself needing to call this function directly, just copy
+ * the function into your own code and modify it as needed, it's only 100
+ * lines and you will likely need to modify it anyway.
+ */
 pub async fn run(state: &BLEState,
                  cb: fn(state: &BLEState,
                         address: String,
@@ -24,6 +42,11 @@ pub async fn run(state: &BLEState,
     let (_, session) = BluetoothSession::new().await?;
     let mut events = session.event_stream().await?;
 
+    /*
+     * This is intentionally avoiding a service UUID filter, not
+     * all SwitchBot devices advertise one so filtering would
+     * prevent receving anything from those devices.
+     */
     session.start_discovery_with_filter(&DiscoveryFilter {
         duplicate_data: Some(true),
         discoverable: Some(false),
@@ -68,6 +91,11 @@ pub async fn run(state: &BLEState,
 
                         let mut device_data: DeviceData;
 
+                        /*
+                         * This converts from the Rust enum type in the switchbot_rs crate,
+                         * to a FFI equivalent structs from this crate, while adding bluetooth
+                         * rssi as a convenience.
+                         */
                         match switchbot_data {
                             SwitchBotData::Bot { battery,
                                                  state } => {
