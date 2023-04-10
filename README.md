@@ -1,4 +1,4 @@
-### Switchbot-rs
+### ble_bridge_rs
 
 A Rust FFI library for receiving Bluetooth LE data from SwitchBot devices.
 
